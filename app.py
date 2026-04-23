@@ -22,6 +22,7 @@ cap=cv2.VideoCapture(0)
 if not cap :
     print("couldnt open the camera twin")
     exit()
+
 while True:
     ret,frame=cap.read()
     rgb=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
@@ -36,11 +37,17 @@ while True:
         for hands_landmark in result.multi_hand_landmarks:
                 if state(hands_landmark)==0:
                     pito="closed"
+
                 else:
                     pito="opened"
-                
+                with open("state.txt","w") as file:
+                    if pito=="opened":
+                        file.write("1")           #finna use 1 for opened and 0 for closed
+                    else:
+                        file.write("0") 
                 mp.solutions.drawing_utils.draw_landmarks(frame,hands_landmark,mp_hnds.HAND_CONNECTIONS)
     print(f"dis nigga hands are ? {pito}")
+    
     cv2.imshow("webcame",frame)
 cap.release()
 cv2.destroyAllWindows()
