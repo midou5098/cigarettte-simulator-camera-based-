@@ -1,6 +1,7 @@
 #ifndef HEADERS_H
 #define HEADERS_H
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <stdbool.h>
@@ -28,6 +29,7 @@ class SDLinit{
         ~SDLinit();
         void clear();
         void present();
+        SDL_Renderer* getrenderer(){return renderer;}
         
 
 };
@@ -48,12 +50,46 @@ SDLinit::~SDLinit(){
     TTF_Quit();
 }
 void SDLinit::clear(){
-    SDL_SetRenderDrawColor(renderer,90,150,40,255);
     SDL_RenderClear(renderer);
 }
 void SDLinit::present(){
     SDL_RenderPresent(renderer);
 }
+class uinter{
+    private:
+        std::string  state;
+        SDLinit& sdl;
+    public:
+        uinter(SDLinit &sdl);
+        void update();
+        void color();
+};
+uinter::uinter(SDLinit &osdl) : sdl(osdl){
+    
 
+}
+void uinter::update(){
+    std::ifstream file("state.txt");
+    std::string line;
+    std::getline(file,line);
+    state=line[0];
+    file.close();
+    int k;
+    if (state=="0" || state=="1"){
+        k= std::stoi(state);
+    }
+    
+    switch (k){
+        case 0 :
+            SDL_SetRenderDrawColor(sdl.getrenderer(),110,30,165,255);
+            SDL_RenderFillRect(sdl.getrenderer(), NULL);
+            break;
+        case 1 :
+            SDL_SetRenderDrawColor(sdl.getrenderer(),180,130,65,255);
+            SDL_RenderFillRect(sdl.getrenderer(), NULL);
+            break;
+        
+}
+}
 
 #endif

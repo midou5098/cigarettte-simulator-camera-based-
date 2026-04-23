@@ -4,6 +4,7 @@
 
 int main(void){
     SDLinit sdl("fuckass cigarette",1280,720);
+    uinter uic(sdl);
 
     bool running =true;
     SDL_Event event;
@@ -14,6 +15,7 @@ int main(void){
             }
         }
         sdl.clear();
+        uic.update();
         sdl.present();
 
 
