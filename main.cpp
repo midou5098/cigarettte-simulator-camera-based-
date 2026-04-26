@@ -3,6 +3,7 @@
 
 
 int main(void){
+    int mode=0;
     SDLinit sdl("fuckass cigarette",1280,720);
     uinter uic(sdl);
 
@@ -12,10 +13,12 @@ int main(void){
         while(SDL_PollEvent(&event)){
             if (event.type==SDL_QUIT){
                 running =false;
+
             }
+            uic.handle(event,&mode);
         }
         sdl.clear();
-        uic.update();
+        uic.layout(mode);
         sdl.present();
 
 
