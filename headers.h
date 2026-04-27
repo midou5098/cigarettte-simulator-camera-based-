@@ -110,7 +110,7 @@ void SDLinit::drawbut(int x,int y,int w,int h,int r,int g,int b,const std::strin
 
 
 
-
+// i m tired , i m tired , just , someone , i need someone to fill this gap, this gut wrenching gap that no amount of repos or projects will fill, you were never even good to me , falling for the person that u could be
 
 
 
@@ -145,6 +145,7 @@ class uinter{
         SDL_Texture* oris_m;
         SDL_Texture* cuba_m;
         SDL_Texture* fire;
+        SDL_Texture* marl_smoked;
         int chooice=0;
         int COLS=6,ROWS=6;
         int current_frame=0;
@@ -152,11 +153,14 @@ class uinter{
         Uint32 current=0;
         Uint32 current_time=0;
         double frame_delay=100;
+        bool burning=false;
+        int fy=229;
 
     public:
         uinter(SDLinit &sdl);
         void update();
         void color();
+        void minus(void);
         void animate(int px,int py,int w,int h);
         bool mouse(int x,int y,int w,int h,int mx,int my);
         void handle(SDL_Event event,int* mode);
@@ -190,11 +194,17 @@ uinter::uinter(SDLinit &osdl) : sdl(osdl){
 
 
 
+    SDL_Surface* marl_sm=IMG_Load("assets/marl_smo.png");
+    marl_smoked=SDL_CreateTextureFromSurface(sdl.getrenderer(),marl_sm);
+    SDL_FreeSurface(marl_sm);
+
 
 
 
 }
-
+void uinter::minus(void){
+    fy=fy+1;
+}
 
 
 void uinter::animate(int px,int py,int w,int h){
@@ -256,6 +266,8 @@ void uinter::handle(SDL_Event event,int* mode){
         SDL_Keycode key=event.key.keysym.sym;
         if(key==SDLK_ESCAPE && mode!=0){
             *mode=0;
+        }else if(key==SDLK_i){
+            minus();
         }
     
 
@@ -307,12 +319,20 @@ void uinter::layout(int mode){
             sdl.drawbut(540,500,200,100,245, 230, 211,"smoke !");
             break;}
         case 1 :
+            if (fy>540){
+                burning=false;
+            }else{
+                burning =true;
+            }
             SDL_Rect cigar={450,190,400,600};
             switch(chooice){
-                case 1 :
+                case 1 :{
                     SDL_RenderCopy(sdl.getrenderer(),marlboro_m,NULL,&cigar);
-                    animate(620,229,60,100);
-                    break;
+                    SDL_Rect ash={450,190,400,fy-229};
+                    SDL_Rect ash_p={0,0,400,fy-229};
+                    SDL_RenderCopy(sdl.getrenderer(),marl_smoked,&ash,&ash_p);
+                    animate(620,fy,60,100);
+                    break;}
                 case 2 :
                     SDL_RenderCopy(sdl.getrenderer(),oris_m,NULL,&cigar);
                     break;
