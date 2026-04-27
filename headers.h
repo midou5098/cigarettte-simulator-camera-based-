@@ -263,7 +263,7 @@ void uinter::handle(SDL_Event event,int* mode){
         if(key==SDLK_ESCAPE && mode!=0){
             *mode=0;
         }else if(key==SDLK_i){
-            minus();
+            if(burning){minus();}
         }
     
 
@@ -330,6 +330,9 @@ void uinter::layout(int mode){
                     SDL_RenderCopy(sdl.getrenderer(), marl_smoked, NULL, &cigar2);
                     SDL_RenderSetClipRect(sdl.getrenderer(), NULL);
                     animate(620,fy,60,100);
+                    if(!burning){
+                        sdl.drawtext(300,100,"its swweet isnt it , want another one :3 ?",true);
+                    }
                     break;}
                 case 2 :
                     SDL_RenderCopy(sdl.getrenderer(),oris_m,NULL,&cigar);
