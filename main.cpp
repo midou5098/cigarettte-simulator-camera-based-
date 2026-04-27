@@ -17,7 +17,7 @@ int main(void){
             }
             uic.handle(event,&mode);
         }
-        sdl.clear();
+        sdl.clear(&mode);
         uic.layout(mode);
         sdl.present();
 

@@ -29,7 +29,7 @@ class SDLinit{
     public:
         SDLinit(std::string title,int w,int h);
         ~SDLinit();
-        void clear();
+        void clear(int *mode);
         void present();
         void drawtext(int x,int y,const std::string &text,bool ch);
         void drawbut(int x,int y,int w,int h,int r,int g,int b,const std::string &text);
@@ -54,8 +54,14 @@ SDLinit::~SDLinit(){
     IMG_Quit();
     TTF_Quit();
 }
-void SDLinit::clear(){
-    SDL_SetRenderDrawColor(renderer,156,90,60,255);
+void SDLinit::clear(int *mode){
+    if (*mode==0){
+        SDL_SetRenderDrawColor(renderer,156,90,60,255);
+    }else{
+        SDL_SetRenderDrawColor(renderer,70,80,70,255);
+
+    }
+    
     SDL_RenderClear(renderer);
 }
 void SDLinit::present(){
@@ -128,8 +134,6 @@ void SDLinit::drawbut(int x,int y,int w,int h,int r,int g,int b,const std::strin
 
 
 
-
-
 class uinter{
     private:
         std::string  state;
@@ -137,11 +141,23 @@ class uinter{
         SDL_Texture* marlboro;
         SDL_Texture* oris;
         SDL_Texture* cuba;
-        int chooice;
+        SDL_Texture* marlboro_m;
+        SDL_Texture* oris_m;
+        SDL_Texture* cuba_m;
+        SDL_Texture* fire;
+        int chooice=0;
+        int COLS=6,ROWS=6;
+        int current_frame=0;
+        Uint32 lframe=0;
+        Uint32 current=0;
+        Uint32 current_time=0;
+        double frame_delay=100;
+
     public:
         uinter(SDLinit &sdl);
         void update();
         void color();
+        void animate(int px,int py,int w,int h);
         bool mouse(int x,int y,int w,int h,int mx,int my);
         void handle(SDL_Event event,int* mode);
         void layout(int mode);
@@ -156,6 +172,21 @@ uinter::uinter(SDLinit &osdl) : sdl(osdl){
     SDL_Surface* cub=IMG_Load("assets/cuba_show.png");
     cuba=SDL_CreateTextureFromSurface(sdl.getrenderer(),cub);
     SDL_FreeSurface(cub);
+    
+
+    SDL_Surface* marl_m=IMG_Load("assets/marlboro.png");
+    marlboro_m=SDL_CreateTextureFromSurface(sdl.getrenderer(),marl_m);
+    SDL_FreeSurface(marl_m);
+    SDL_Surface* ori_m=IMG_Load("assets/oris.png");
+    oris_m=SDL_CreateTextureFromSurface(sdl.getrenderer(),ori_m);
+    SDL_FreeSurface(ori_m);
+    SDL_Surface* cub_m=IMG_Load("assets/cuba.png");
+    cuba_m=SDL_CreateTextureFromSurface(sdl.getrenderer(),cub_m);
+    SDL_FreeSurface(cub_m);
+
+    SDL_Surface* fire_s=IMG_Load("assets/fire.png");
+    fire=SDL_CreateTextureFromSurface(sdl.getrenderer(),fire_s);
+    SDL_FreeSurface(fire_s);
 
 
 
@@ -163,6 +194,40 @@ uinter::uinter(SDLinit &osdl) : sdl(osdl){
 
 
 }
+
+
+
+void uinter::animate(int px,int py,int w,int h){
+        int W,H;
+        SDL_QueryTexture(fire,NULL,NULL,&W,&H);
+        int framewidth=W/6;
+        int frameheight=H/6;
+        SDL_Rect rect;
+        rect.w=framewidth;
+        rect.h=frameheight;
+        int framex=current_frame%6;
+        int framey=current_frame/6;
+        rect.x=framex*framewidth;
+        rect.y=framey*frameheight;
+        SDL_Rect dst;
+        dst.x=px;
+        dst.y=py;
+        dst.w=w;
+        dst.h=h;
+
+        current_time = SDL_GetTicks();
+        if (current_time > lframe + frame_delay) {
+            current_frame = (current_frame + 1) % 36; 
+            lframe = current_time;
+        }
+        SDL_RenderCopy(sdl.getrenderer(), fire, &rect, &dst);
+
+}
+
+
+
+
+
 void uinter::update(){
     std::ifstream file("state.txt");
     std::string line;
@@ -195,14 +260,18 @@ void uinter::handle(SDL_Event event,int* mode){
     
 
     }else if (event.type==SDL_MOUSEBUTTONDOWN){
-        int mx=event.button.x;
-        int my=event.button.y;
-        if(mouse(875,70,370,50,mx,my)){
-            chooice=1;
-        }else if(mouse(890,200,370,50,mx,my)){
-            chooice=2;
-        }else if(mouse(845,280,400,70,mx,my)){
-            chooice=3;
+        if(*mode==0){
+            int mx=event.button.x;
+            int my=event.button.y;
+            if(mouse(875,70,370,50,mx,my)){
+                chooice=1;
+            }else if(mouse(890,200,370,50,mx,my)){
+                chooice=2;
+            }else if(mouse(845,280,400,70,mx,my)){
+                chooice=3;
+            }else if (mouse (540,500,200,100,mx,my) && chooice!=0){
+                *mode=1;
+            }
         }
        
     }
@@ -220,7 +289,7 @@ bool uinter::mouse(int x,int y,int w,int h,int mx,int my){
 
 void uinter::layout(int mode){
     switch(mode){
-        case 0 :
+        case 0 :{
             SDL_Rect mar={830,-50,500,300};
             SDL_RenderCopy(sdl.getrenderer(),marlboro,NULL,&mar);
             sdl.drawtext(700,90,"marlboro red",chooice==1);
@@ -236,8 +305,24 @@ void uinter::layout(int mode){
 
 
             sdl.drawbut(540,500,200,100,245, 230, 211,"smoke !");
-
+            break;}
+        case 1 :
+            SDL_Rect cigar={450,190,400,600};
+            switch(chooice){
+                case 1 :
+                    SDL_RenderCopy(sdl.getrenderer(),marlboro_m,NULL,&cigar);
+                    animate(620,229,60,100);
+                    break;
+                case 2 :
+                    SDL_RenderCopy(sdl.getrenderer(),oris_m,NULL,&cigar);
+                    break;
+                case 3 :
+                    SDL_RenderCopy(sdl.getrenderer(),cuba_m,NULL,&cigar);
+                    break;
+                }
+        
+        }
 
     }
-}
+
 #endif
