@@ -247,7 +247,7 @@ void uinter::update(){
     file.close();
     Uint32 now = SDL_GetTicks();
     if(state=="1" || state=="0"){
-        if(std::stoi(state)==1 && burning && now > lframe_burn + 210){
+        if(std::stoi(state)==1 && burning && now > lframe_burn + 150){
             lframe_burn = now;
             
             minus();
@@ -262,6 +262,8 @@ void uinter::handle(SDL_Event event,int* mode){
         SDL_Keycode key=event.key.keysym.sym;
         if(key==SDLK_ESCAPE && mode!=0){
             *mode=0;
+        }else if(key==SDLK_i){
+            minus();
         }
     
 
@@ -319,12 +321,14 @@ void uinter::layout(int mode){
                 burning =true;
             }
             SDL_Rect cigar={450,190,400,600};
+            SDL_Rect cigar2={445,170,410,600};
             switch(chooice){
                 case 1 :{
                     SDL_RenderCopy(sdl.getrenderer(),marlboro_m,NULL,&cigar);
-                    SDL_Rect ash={450,190,400,fy-229};
-                    SDL_Rect ash_p={0,0,400,fy-229};
-                    SDL_RenderCopy(sdl.getrenderer(),marl_smoked,&ash_p,&ash);
+                    SDL_Rect ash={445,110,410,fy-59};
+                    SDL_RenderSetClipRect(sdl.getrenderer(), &ash);
+                    SDL_RenderCopy(sdl.getrenderer(), marl_smoked, NULL, &cigar2);
+                    SDL_RenderSetClipRect(sdl.getrenderer(), NULL);
                     animate(620,fy,60,100);
                     break;}
                 case 2 :
