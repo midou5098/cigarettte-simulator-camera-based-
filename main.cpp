@@ -18,10 +18,11 @@ int main(void){
             uic.handle(event,&mode);
         }
         sdl.clear(&mode);
+        uic.update();
         uic.layout(mode);
         sdl.present();
 
-
+    
     }
     sdl.~SDLinit();
     return 0;

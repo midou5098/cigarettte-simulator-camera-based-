@@ -155,6 +155,7 @@ class uinter{
         double frame_delay=100;
         bool burning=false;
         int fy=229;
+        Uint32 lframe_burn = 0;
 
     public:
         uinter(SDLinit &sdl);
@@ -244,30 +245,23 @@ void uinter::update(){
     std::getline(file,line);
     state=line[0];
     file.close();
-    int k;
-    if (state=="0" || state=="1"){
-        k= std::stoi(state);
+    Uint32 now = SDL_GetTicks();
+    if(state=="1" || state=="0"){
+        if(std::stoi(state)==1 && burning && now > lframe_burn + 210){
+            lframe_burn = now;
+            
+            minus();
+            
+            
+        }
     }
     
-    switch (k){
-        case 0 :
-            SDL_SetRenderDrawColor(sdl.getrenderer(),110,30,165,255);
-            SDL_RenderFillRect(sdl.getrenderer(), NULL);
-            break;
-        case 1 :
-            SDL_SetRenderDrawColor(sdl.getrenderer(),180,130,65,255);
-            SDL_RenderFillRect(sdl.getrenderer(), NULL);
-            break;
-        
-}
 }
 void uinter::handle(SDL_Event event,int* mode){
     if(event.type==SDL_KEYDOWN){
         SDL_Keycode key=event.key.keysym.sym;
         if(key==SDLK_ESCAPE && mode!=0){
             *mode=0;
-        }else if(key==SDLK_i){
-            minus();
         }
     
 
@@ -330,7 +324,7 @@ void uinter::layout(int mode){
                     SDL_RenderCopy(sdl.getrenderer(),marlboro_m,NULL,&cigar);
                     SDL_Rect ash={450,190,400,fy-229};
                     SDL_Rect ash_p={0,0,400,fy-229};
-                    SDL_RenderCopy(sdl.getrenderer(),marl_smoked,&ash,&ash_p);
+                    SDL_RenderCopy(sdl.getrenderer(),marl_smoked,&ash_p,&ash);
                     animate(620,fy,60,100);
                     break;}
                 case 2 :
